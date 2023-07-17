@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "selector123d"
+version = "0.1.0"
+
+authors = [{name = "Bernhard Walter", email = "b_walter@arcor.de"}]
+description = "Experimental project to create selectors for build123d with the help of the OCP CAD Viewer UI"
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = [
+    "OCP CAD Viewer",
+    "build123d",
+    "3d",
+    "brep",
+    "cad",
+    "opencscade",
+    "python",
+]
+license = {text = "MIT"}
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+
+dependencies = [
+    "matplotlib",
+    "numpy"
+]
