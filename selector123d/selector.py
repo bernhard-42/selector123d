@@ -1,9 +1,13 @@
 from ocp_tessellate import OCP_Edges, OCP_Faces, OCP_Vertices, OCP_Part, OCP_PartGroup
 from ocp_vscode.colors import ColorMap
 from build123d import Axis, Edge, Face, Vertex
-from ocp_vscode import show, status
+from ocp_vscode import show, status, Collapse
+from ocp_vscode.comms import listener
+from .states import States
+
 
 __all__ = ["SelectorTool"]
+
 
 def axis_key(axis):
     return (axis.position.to_tuple(), axis.direction.to_tuple())
@@ -14,6 +18,14 @@ axis_lut = {
     axis_key(Axis.Y): "Axis.Y",
     axis_key(Axis.Z): "Axis.Z",
 }
+
+
+def callback(message, kind):
+    if message.get("states") is not None:
+        # states = States(message["states"])
+        states = States()
+        print("# %%")
+        print(states.code())
 
 
 class SelectorTool:
@@ -52,7 +64,7 @@ class SelectorTool:
                     pg.objects.append(
                         cls(
                             [obj[0].wrapped],
-                            name=f"group_by({axis_label})[{j}][0]",
+                            name=f"group_by({axis_label})[{j}]",
                             **width_arg,
                             **color,
                         )
@@ -91,13 +103,11 @@ class SelectorTool:
             parent, objects, cls, axes, label, width=width, colormap=colormap
         )
         show(self.pg, collapse=Collapse.ROOT, default_edgecolor="#aaaaaa")
+        self.listen()
 
-    @property
-    def selector(self):
-        pick = status()["lastPick"]
-        states = status()["states"]
-        prefix = pick["path"] + "/" + pick["name"]
-        states = {k: v for k, v in states.items() if k.startswith(prefix) and v[1] == 0}
-        suffixes = [k[len(prefix) :] for k, v in states.items()]
-
-        return pick["path"].replace("/", "") + pick["name"]
+    def listen(self):
+        listen = listener(callback)
+        try:
+            listen()
+        except KeyboardInterrupt:
+            pass
